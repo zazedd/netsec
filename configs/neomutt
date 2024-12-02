@@ -1,0 +1,26 @@
+set certificate_file = "~/.neomutt/certificates"
+
+# IMAP settings
+set folder = "imaps://mx1.netsec.org:993/"
+set spoolfile = "+INBOX"
+set imap_user = "user1@netsec.org"
+set imap_pass = "test"
+
+# SMTP settings 
+set smtp_url = "smtps://user1@netsec.org@mx1.netsec.org:465/"
+set smtp_pass = "test"
+set realname = "John Doe"
+set from = "user1@netsec.org"
+
+# TLS settings
+set ssl_force_tls = yes
+set ssl_starttls = yes
+
+# Basic display settings
+set header_cache=~/.cache/mutt
+
+# Configure editor
+set editor = "vim"
+
+# Automatically fetch mail when starting
+set mail_check = 60
