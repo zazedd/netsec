@@ -1,45 +1,71 @@
-{ pkgs, ... }:
+{ pkgs, inputs,  ... }:
 {
   containers.attacker = {
     autoStart = false;
     privateNetwork = true;
     hostBridge = "br0"; # Specify the bridge name
-    localAddress = "82.103.20.3/24";
-    ephemeral = true; # makes the container stateless, it will reset on restart
+    localAddress = "10.0.0.100/24";
+    ephemeral = true; # stateless
+    bindMounts = {
+      # monta o /etc/resolv.conf do host, para partilhar os nameservers
+      "/etc/resolv.conf" = {
+        hostPath = "/etc/resolv.conf";
+        isReadOnly = true;
+      };
+    };
     config = {
-      services.getty.autologinUser = "guest";
-      users.users."guest" = {
+
+      imports = [ inputs.home-manager.nixosModules.home-manager ];
+
+      services.getty.autologinUser = "hackerman";
+      users.users."hackerman" = {
         isNormalUser = true;
         extraGroups = [ "wheel" ];
         password = "123";
       };
 
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        users."hackerman" = {
+          home.stateVersion = "24.05";
+          home.file = pkgs.lib.mkMerge [
+            {
+              "/home/hackerman/preload.rc".source = ../configs/preload.rc;
+            }
+            {
+              "/home/hackerman/ransom.sh".source = ../ransoms/ransom.sh;
+            }
+            {
+              "/home/hackerman/pk.pem".source = ../ransoms/pk.pem;
+            }
+            {
+              "/home/hackerman/sk.pem".source = ../ransoms/sk.pem;
+            }
+          ];
+        };
+      };
+
+      security.sudo.wheelNeedsPassword = false;
+
       environment.systemPackages = with pkgs; [
         dig
         metasploit
+        samba
         smbclient-ng
         nmap
       ];
 
-      security.sudo.wheelNeedsPassword = false;
-
       networking = {
         firewall = {
-          enable = true;
-          allowedTCPPorts = [ 443 ];
-          allowedUDPPorts = [ 443 ];
+          enable = false;
+          allowedTCPPorts = [ 67 ];
+          allowedUDPPorts = [ 67 ];
         };
 
+        interfaces."eth0".useDHCP = pkgs.lib.mkForce true;
+
         useHostResolvConf = pkgs.lib.mkForce false;
-        # Simular a existencia de um DNS na internet que tenha um A record para a netsec.org 
-        # e CNAMEs para os outros
-        extraHosts = ''
-          82.103.20.2 netsec.org
-          82.103.20.2 samba.netsec.org
-          82.103.20.2 admin.netsec.org
-          82.103.20.2 gestao.netsec.org
-          82.103.20.2 clientes.netsec.org
-        '';
       };
 
       system.stateVersion = "24.05";

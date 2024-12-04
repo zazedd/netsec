@@ -2,7 +2,7 @@
 { pkgs, ... }:
 {
   containers.log = {
-    autoStart = false;
+    autoStart = true;
     ephemeral = true;
     privateNetwork = true;
     hostBridge = "br0"; # Specify the bridge name

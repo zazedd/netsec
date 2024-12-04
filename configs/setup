@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 
+resize
+
 USERNAME="samba_user"
-PASSWORD="test"
 CONTAINER="websites"
 
 # Function to run a command in the container and check its status
 run_in_container() {
-  nixos-container run "$CONTAINER" -- $1
-  if [ $? -ne 0 ]; then
-    echo "Failed: $1"
-    exit 1
-  fi
+	nixos-container run "$CONTAINER" -- $1
+	if [ $? -ne 0 ]; then
+		echo "Failed: $1"
+		exit 1
+	fi
 }
 
 run_in_container "mkdir -p /tmp/samba"

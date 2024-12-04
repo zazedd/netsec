@@ -1,11 +1,11 @@
 { pkgs, ... }:
 {
   containers.backup = {
-    autoStart = false;
+    autoStart = true;
     ephemeral = true;
     privateNetwork = true;
     hostBridge = "br0"; # Specify the bridge name
-    localAddress = "10.0.0.6/24";
+    localAddress = "10.0.0.5/24";
     bindMounts = {
       # monta o /etc/resolv.conf do host, para partilhar os nameservers
       "/etc/resolv.conf" = {

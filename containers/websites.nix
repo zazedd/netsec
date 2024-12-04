@@ -7,7 +7,7 @@
   pkgs,
   options,
   config,
-  home-manager,
+  inputs,
   oldpkgs,
   ...
 }:
@@ -23,21 +23,43 @@ in
 {
   containers.websites = {
     autoStart = true;
+    ephemeral = true;
     privateNetwork = true;
     hostBridge = "br0"; # Specify the bridge name
     localAddress = "10.0.0.3/24";
     config = {
-      services.getty.autologinUser = "root";
-      users.users."guest" = {
-        isNormalUser = true;
-        extraGroups = [ "wheel" ];
-        hashedPassword = "";
-      };
 
+      imports = [ inputs.home-manager.nixosModules.home-manager ];
+
+      services.getty.autologinUser = "root";
       users.users."samba_user" = {
         isNormalUser = true;
         hashedPassword = "";
       };
+
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        users."samba_user" = {
+          home.stateVersion = "24.05";
+          home.file = pkgs.lib.mkMerge [
+            {
+              "/home/samba_user/important_file" = {
+                text = "very important thing yes";
+              };
+            }
+            {
+              "/home/guest/stuff/bitcoinwallet" = {
+                text = "bitcoin address";
+              };
+            }
+          ];
+        };
+      };
+
+      environment.systemPackages = with pkgs; [
+        openssl
+      ];
 
       security.sudo.wheelNeedsPassword = false;
       users.users.root.hashedPassword = "";
@@ -80,45 +102,45 @@ in
       };
 
       # email server
-      # services.maddy = {
-      #   enable = true;
-      #   primaryDomain = "netsec.org";
-      #   openFirewall = true;
-      #   tls = {
-      #     loader = "file";
-      #     certificates = [
-      #       {
-      #         keyPath = "/var/lib/acme/mx1.netsec.org/key.pem";
-      #         certPath = "/var/lib/acme/mx1.netsec.org/cert.pem";
-      #       }
-      #     ];
-      #   };
-      #
-      #   # Enable TLS listeners. Configuring this via the module is not yet
-      #   # implemented, see https://github.com/NixOS/nixpkgs/pull/153372
-      #   config =
-      #     builtins.replaceStrings
-      #       [
-      #         "imap tcp://0.0.0.0:143"
-      #         "submission tcp://0.0.0.0:587"
-      #       ]
-      #       [
-      #         "imap tls://0.0.0.0:993 tcp://0.0.0.0:143"
-      #         "submission tls://0.0.0.0:465 tcp://0.0.0.0:587"
-      #       ]
-      #       (options.services.maddy.config.default + "\n" + "log syslog");
-      #   ensureAccounts = [
-      #     "user1@netsec.org"
-      #     "user2@netsec.org"
-      #     "postmaster@netsec.org"
-      #   ];
-      #   ensureCredentials = {
-      #     # This will make passwords world-readable in the Nix store
-      #     "user1@netsec.org".passwordFile = "${pkgs.writeText "postmaster" "test"}";
-      #     "user2@netsec.org".passwordFile = "${pkgs.writeText "postmaster" "test"}";
-      #     "postmaster@netsec.org".passwordFile = "${pkgs.writeText "postmaster" "test"}";
-      #   };
-      # };
+      services.maddy = {
+        enable = true;
+        primaryDomain = "netsec.org";
+        openFirewall = true;
+        tls = {
+          loader = "file";
+          certificates = [
+            {
+              keyPath = "/var/lib/acme/mx1.netsec.org/key.pem";
+              certPath = "/var/lib/acme/mx1.netsec.org/cert.pem";
+            }
+          ];
+        };
+
+        # Enable TLS listeners. Configuring this via the module is not yet
+        # implemented, see https://github.com/NixOS/nixpkgs/pull/153372
+        config =
+          builtins.replaceStrings
+            [
+              "imap tcp://0.0.0.0:143"
+              "submission tcp://0.0.0.0:587"
+            ]
+            [
+              "imap tls://0.0.0.0:993 tcp://0.0.0.0:143"
+              "submission tls://0.0.0.0:465 tcp://0.0.0.0:587"
+            ]
+            (options.services.maddy.config.default + "\n" + "log syslog");
+        ensureAccounts = [
+          "user1@netsec.org"
+          "user2@netsec.org"
+          "postmaster@netsec.org"
+        ];
+        ensureCredentials = {
+          # This will make passwords world-readable in the Nix store
+          "user1@netsec.org".passwordFile = "${pkgs.writeText "postmaster" "test"}";
+          "user2@netsec.org".passwordFile = "${pkgs.writeText "postmaster" "test"}";
+          "postmaster@netsec.org".passwordFile = "${pkgs.writeText "postmaster" "test"}";
+        };
+      };
 
       environment.etc = {
         "/www/admin/index.html" = {
@@ -215,6 +237,21 @@ in
             80
             443
           ];
+        };
+
+        interfaces.eth0.ipv4 = {
+          routes = [
+            {
+              address = "82.103.20.0";
+              prefixLength = 24;
+              via = "10.0.0.5";
+            }
+          ];
+        };
+
+        defaultGateway = { 
+          address = "10.0.0.5";
+          interface = "eth0";
         };
 
         useHostResolvConf = pkgs.lib.mkForce false;

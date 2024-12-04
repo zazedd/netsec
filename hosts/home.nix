@@ -2,7 +2,7 @@
 {
   programs.bash.enable = true;
 
-  home.stateVersion = "23.11";
+  home.stateVersion = "24.05";
   home.file = pkgs.lib.mkMerge [
     {
       "/home/guest/.config/neomutt/neomuttrc" = {

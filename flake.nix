@@ -97,12 +97,7 @@
             ./containers/websites.nix # includes email server
             ./containers/log.nix
             ./containers/dns.nix
-            ./containers/log.nix
-            ./containers/proxy.nix
-            ./containers/dhcp.nix
             ./containers/backup.nix
-            ./containers/guest.nix
-
             ./containers/attacker.nix
           ];
         }
