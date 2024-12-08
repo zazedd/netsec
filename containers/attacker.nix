@@ -56,7 +56,7 @@ in
               "/home/hackerman/bash/pk.pem".source = ../ransoms/bash/pk.pem;
             }
             {
-              "/home/hackerman/bash/sk.pem".source = ../ransoms/sk.pem;
+              "/home/hackerman/bash/sk.pem".source = ../ransoms/bash/sk.pem;
             }
             {
               "/home/hackerman/python/decrypt.py".source = ../ransoms/python/decrypt.py;
@@ -67,7 +67,7 @@ in
             {
               "/home/hackerman/python/secretKey.key".source = ../ransoms/python/secretKey.key;
             }
-            }
+            {
               "/home/hackerman/lilu.o".source = ../ransoms/lilu.o;
             }
           ];
