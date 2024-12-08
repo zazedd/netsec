@@ -1,4 +1,20 @@
 { pkgs, inputs,  ... }:
+let
+  pythonPackages = pkgs.python3Packages;
+  ippserver =
+    let
+      pname = "ippserver";
+      version = "0.2";
+    in
+    pythonPackages.buildPythonPackage {
+      inherit pname version;
+      src = pkgs.fetchPypi {
+        inherit pname version;
+        sha256 = "sha256-hs3B0JRWx8OvT44Jv65MpG52MAV26y6+zow9hDaCt0U=";
+      };
+      doCheck = false;
+    };
+in
 {
   containers.attacker = {
     autoStart = false;
@@ -34,13 +50,25 @@
               "/home/hackerman/preload.rc".source = ../configs/preload.rc;
             }
             {
-              "/home/hackerman/ransom.sh".source = ../ransoms/ransom.sh;
+              "/home/hackerman/bash/ransom.sh".source = ../ransoms/bash/ransom.sh;
             }
             {
-              "/home/hackerman/pk.pem".source = ../ransoms/pk.pem;
+              "/home/hackerman/bash/pk.pem".source = ../ransoms/bash/pk.pem;
             }
             {
-              "/home/hackerman/sk.pem".source = ../ransoms/sk.pem;
+              "/home/hackerman/bash/sk.pem".source = ../ransoms/sk.pem;
+            }
+            {
+              "/home/hackerman/python/decrypt.py".source = ../ransoms/python/decrypt.py;
+            }
+            {
+              "/home/hackerman/python/ransomware.py".source = ../ransoms/python/ransomware.py;
+            }
+            {
+              "/home/hackerman/python/secretKey.key".source = ../ransoms/python/secretKey.key;
+            }
+            }
+              "/home/hackerman/lilu.o".source = ../ransoms/lilu.o;
             }
           ];
         };
@@ -49,11 +77,14 @@
       security.sudo.wheelNeedsPassword = false;
 
       environment.systemPackages = with pkgs; [
+        (python3.withPackages (ps: [ ippserver ]))
+
         dig
         metasploit
         samba
         smbclient-ng
         nmap
+        rclone
       ];
 
       networking = {

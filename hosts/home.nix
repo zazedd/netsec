@@ -5,12 +5,12 @@
   home.stateVersion = "24.05";
   home.file = pkgs.lib.mkMerge [
     {
-      "/home/guest/.config/neomutt/neomuttrc" = {
+      "/home/vm/.config/neomutt/neomuttrc" = {
         text = builtins.readFile ../configs/neomutt;
       };
     }
     {
-      "/home/guest/setup.sh" = {
+      "/home/vm/setup.sh" = {
         text = builtins.readFile ../configs/setup;
       };
     }

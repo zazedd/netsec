@@ -1,0 +1,8 @@
+#detect nmap ping sweet
+alert icmp any any -> $HOME_NET any (msg:"Ping Scan Detected"; icode:0; itype:8; sid:1000005; rev:1;)
+ 
+#detect TCP SYN (-sS)
+alert tcp any any -> $HOME_NET any (msg:"NMAP TCP SYN Scan Detected"; flags:S; sid:1000006; rev:1;)
+ 
+#detect ACK Scan (-sA)
+alert tcp any any -> $HOME_NET any (msg:"Nmap ACK Scan Detected"; flags:A; sid:1000007; rev:1;)

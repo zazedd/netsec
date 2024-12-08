@@ -49,7 +49,7 @@ in
               };
             }
             {
-              "/home/guest/stuff/bitcoinwallet" = {
+              "/home/samba_user/stuff/bitcoinwallet" = {
                 text = "bitcoin address";
               };
             }
@@ -57,8 +57,22 @@ in
         };
       };
 
+      systemd.services."enable-promiscuous-mode" = {
+        description = "Promiscuous mode on eth0";
+        after = [ "network-online.target" ];
+        wants = [ "network-online.target" ];
+        serviceConfig = {
+          ExecStart = "ip link set eth0 promisc on";
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+      };
+
       environment.systemPackages = with pkgs; [
+        (python3.withPackages (ps: [ ps.cryptography ]))
         openssl
+        snort
+        vim
       ];
 
       security.sudo.wheelNeedsPassword = false;
@@ -157,6 +171,36 @@ in
           enable = true;
           text = simple_page "Clientes";
         };
+
+        # "/snort/snort.conf" = {
+        #   enable = true;
+        #   source = ../configs/snort.conf;
+        # };
+        #
+        # "/snort/classification.config" = {
+        #   enable = true;
+        #   source = ../configs/classification.config;
+        # };
+        #
+        # "/snort/reference.config" = {
+        #   enable = true;
+        #   source = ../configs/reference.config;
+        # };
+        #
+        # "/snort/rules/CVE-2017-7494.rules" = {
+        #   enable = true;
+        #   source = ../configs/CVE-2017-7494.rules;
+        # };
+        #
+        # "/snort/rules/nmap.rules" = {
+        #   enable = true;
+        #   source = ../configs/nmap.rules;
+        # };
+        #
+        # "/snort/rules/meterpreter.rules" = {
+        #   enable = true;
+        #   source = ../configs/meterpreter.rules;
+        # };
       };
 
       services.nginx = {

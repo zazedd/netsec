@@ -3,6 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs_24-09 = {
+      url = "github:nixos/nixpkgs?ref=e04b941dfbaee9be777a440e163fdda09ec10c2c";
+      flake = false;
+    };
     nixpkgs_17-03 = {
       url = "github:nixos/nixpkgs?ref=ee7db075d100ff8221414ca1a7e89defd35b8f41";
       flake = false;
@@ -14,6 +18,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs_24-09,
       nixpkgs_17-03,
       home-manager,
     }@inputs:
@@ -62,11 +67,13 @@
         let
           sys = if s == "aarch64-darwin" || s == "aarch64-linux" then "aarch64-linux" else "x86_64-linux";
           oldpkgs = pkgsFor nixpkgs_17-03 s;
+          oldcups = pkgsFor nixpkgs_24-09 s;
         in
         nixpkgs.lib.nixosSystem {
           system = sys;
           specialArgs = {
             oldpkgs = oldpkgs;
+            oldcups = oldcups;
             inputs = inputs;
           };
           modules = [
@@ -75,7 +82,7 @@
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users."guest" = import ./hosts/home.nix;
+                users."vm" = import ./hosts/home.nix;
               };
             }
             {
@@ -94,11 +101,13 @@
             }
             ./hosts/system.nix
 
-            ./containers/websites.nix # includes email server
+            ./containers/websites.nix
             ./containers/log.nix
             ./containers/dns.nix
             ./containers/backup.nix
+
             ./containers/attacker.nix
+            ./containers/guest.nix
           ];
         }
       );

@@ -1,7 +1,7 @@
-{ pkgs, home-manager, ... }: 
+{ pkgs, home-manager, options, lib, ... }: 
 {
-  services.getty.autologinUser = "guest";
-  users.users."guest" = {
+  services.getty.autologinUser = "vm";
+  users.users."vm" = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     password = "123";
@@ -23,9 +23,43 @@
     openssl
     gsasl
     gnutls
+    snort
+    tcpdump
   ];
 
   boot.kernel.sysctl."max_user_instances" = 8192;
+
+  environment.etc = {
+    "/snort/snort.conf" = {
+      enable = true;
+      source = ../configs/snort.conf;
+    };
+
+    "/snort/classification.config" = {
+      enable = true;
+      source = ../configs/classification.config;
+    };
+
+    "/snort/reference.config" = {
+      enable = true;
+      source = ../configs/reference.config;
+    };
+
+    "/snort/rules/CVE-2017-7494.rules" = {
+      enable = true;
+      source = ../configs/CVE-2017-7494.rules;
+    };
+
+    "/snort/rules/nmap.rules" = {
+      enable = true;
+      source = ../configs/nmap.rules;
+    };
+
+    "/snort/rules/meterpreter.rules" = {
+      enable = true;
+      source = ../configs/meterpreter.rules;
+    };
+  };
 
   # Network configuration.
   networking = {
