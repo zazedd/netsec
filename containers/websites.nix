@@ -1,8 +1,3 @@
-# 3 websites are going to be defined here using nginx
-# 2 only accessible the intranet: admin.netsec.org and gestao.netsec.org
-# 1 accessible from outside and in: clientes.netsec.org
-
-# email server also
 {
   pkgs,
   options,
@@ -55,6 +50,16 @@ in
             }
           ];
         };
+        users."root" = {
+          home.stateVersion = "24.05";
+          home.file = pkgs.lib.mkMerge [
+            {
+              "/home/root/.ssh/id_ed25519" = {
+                source = ../configs/id_ed25519;
+              };
+            }
+          ];
+        };
       };
 
       systemd.services."enable-promiscuous-mode" = {
@@ -93,18 +98,11 @@ in
         };
       };
 
-      # environment.systemPackages = with oldpkgs; [ glibc ];
-      # environment.variables."LD_LIBRARY_PATH" = "${oldpkgs.glibc}/lib/:$LD_LIBRARY_PATH";
-
       services.samba = {
         enable = true;
         package = oldpkgs.samba; # version 4.5.8, exploitable through CVE-2017-7494
         openFirewall = true;
         settings = {
-          # this setting disables the exploit!
-          # global = {
-          #   "nt pipe support" = "no";
-          # };
           public = {
             comment = "Public samba share.";
             browseable = "yes";
@@ -115,6 +113,8 @@ in
             "guest ok" = "yes";
             "create mask" = "0777";
             "directory mask" = "0777";
+            # this setting disables the exploit!
+            # "nt pipe support" = "no";
           };
         };
       };

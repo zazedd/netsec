@@ -27,3 +27,6 @@ sh ransom.sh 10.0.0.100:8080
 
 ```
 
+## Notice
+All keypairs in this repo are not used anywhere else.
+

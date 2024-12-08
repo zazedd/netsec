@@ -67,7 +67,6 @@
         let
           sys = if s == "aarch64-darwin" || s == "aarch64-linux" then "aarch64-linux" else "x86_64-linux";
           oldpkgs = pkgsFor nixpkgs_17-03 s;
-          oldcups = pkgsFor nixpkgs_24-09 s;
         in
         nixpkgs.lib.nixosSystem {
           system = sys;
