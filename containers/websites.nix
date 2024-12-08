@@ -101,6 +101,10 @@ in
         package = oldpkgs.samba; # version 4.5.8, exploitable through CVE-2017-7494
         openFirewall = true;
         settings = {
+          # this setting disables the exploit!
+          # global = {
+          #   "nt pipe support" = "no";
+          # };
           public = {
             comment = "Public samba share.";
             browseable = "yes";
