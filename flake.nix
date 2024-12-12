@@ -72,7 +72,6 @@
           system = sys;
           specialArgs = {
             oldpkgs = oldpkgs;
-            oldcups = oldcups;
             inputs = inputs;
           };
           modules = [

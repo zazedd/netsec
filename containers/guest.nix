@@ -1,4 +1,4 @@
-{ pkgs, inputs, oldcups,  ... }:
+{ pkgs, inputs,  ... }:
 let 
   pdf = pkgs.fetchurl {
     url = "https://pdfobject.com/pdf/sample.pdf";
@@ -22,30 +22,6 @@ in
     config = {
 
       imports = [ inputs.home-manager.nixosModules.home-manager ];
-
-      services.printing = {
-        enable = true;
-        package = oldcups.cups;
-        startWhenNeeded = false;
-        browsedConf = ''
-          BrowseLocalProtocols DNSSD
-          BrowseRemoteProtocols DNSSD
-        '';
-        allowFrom = [ "all" ];
-        cups-pdf.enable = true;
-        browsed.enable = true;
-      };
-
-      services.avahi = {
-        enable = true;
-        package = oldcups.avahi;
-        nssmdns4 = true;
-        openFirewall = true;
-        publish = {
-          enable = true;
-          userServices = true;
-        };
-      };
 
       services.getty.autologinUser = "normalguy";
       users.users."normalguy" = {
